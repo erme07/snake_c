@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "../include/escenarios.h"
-#include "../include/consola.h"
 
 void escenario_1(){
 	for(int i=0;i<COLS;i++)

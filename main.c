@@ -6,50 +6,17 @@
 #include "include/escenarios.h"
 #include "include/consola.h"
 #include "include/colisiones.h"
-
-#define SUP_IZQ 201
-#define SUP_DER 187
-#define INF_IZQ 200
-#define INF_DER 188
-#define VERTICAL 186
-#define HORIZONTAL 205
+#include "include/estructuras.h"
 
 #define FRAMERATE 16 //60fps aprox
 //#define VELOCIDAD 80
 
-enum DIRECCIONES{
-	ARRIBA, 
-	ABAJO, 
-	IZQUIERDA, 
-	DERECHA
-};
-
-typedef struct coordenadas{
-	int x;
-	int y;
-}Coordenadas;
-
-typedef struct bloque{
-	int x;
-	int y;
-	struct bloque *siguiente;
-	struct bloque *anterior;
-}Bloque;
-
-typedef struct serpiente{
-	Bloque *cabeza;
-	int largo;
-	Bloque *cola;
-}Serpiente;
-
-
-
-void imprimirBloque(Coordenadas,int);
+void imprimirBloque(Bloque*,int);
 void limpiarBloque(int, int);
 Bloque *generarBola(Serpiente*);
 
 Serpiente *crearSerpiente(void);
-Bloque *crearBloque(int,int);
+Bloque *crearBloque(Coordenadas,char);
 void liberarMemoria(Serpiente*);
 void agregarBloque(Serpiente*, Bloque*);
 void inicializarSerpiente(Serpiente*);
@@ -61,17 +28,12 @@ void moverSerpiente(Serpiente*,int);
 void comerBola(Serpiente*,Bloque*,Coordenadas);
 Coordenadas posicionarCabeza(int);
 
-BOOL colisionBola(Serpiente*, Bloque*);
-BOOL colisionEscenarios(Serpiente*,int);
-BOOL colisionSerpiente(Serpiente*);
-BOOL colisionEscen1(Coordenadas);
-BOOL colisionEscen2(Coordenadas);
-BOOL colisionEscen3(Coordenadas);
+
 
 int main(){
 	int direccion = IZQUIERDA,T=0;
 	int VELOCIDAD = 80;
-	int ESCENARIO = ESCENARIO1;
+	int ESCENARIO = ESCENARIO2;
 	BOOL game_over = FALSE;
 	Coordenadas cola;
 
@@ -182,6 +144,17 @@ int main(){
 			
 			actualizarCoordenadas(serpiente, direccion);
 			moverSerpiente(serpiente,direccion);
+			if( (ESCENARIO == ESCENARIO2 || ESCENARIO == ESCENARIO3 ) && colisionPortal(serpiente)){
+				if(serpiente->cabeza->x == 0)
+					serpiente->cabeza->x = COLS-2;
+				else if(serpiente->cabeza->x == COLS-1)
+					serpiente->cabeza->x = 1;
+				else if(serpiente->cabeza->y == 0)
+					serpiente->cabeza->y = ROWS-2;
+				else if(serpiente->cabeza->y == ROWS-1)
+					serpiente->cabeza->y = 1;
+			}
+			else
 			if(colisionBola(serpiente, bloque)){
 					comerBola(serpiente, bloque, cola);
 					Sleep(VELOCIDAD);
@@ -284,14 +257,14 @@ Bloque *generarBola(Serpiente*s){
 			aux = aux->anterior;
 		}
 	} while(coordenadasOcupadas); // Repetir si las coordenadas están ocupadas
-	Bloque *bola = crearBloque(c.x, c.y);
-	imprimirBloque(c,0x0C);
+	Bloque *bola = crearBloque(c,'O');
+	imprimirBloque(bola,0x0C);
 	return bola;
 }
 
-void imprimirBloque(Coordenadas c, int color){
+void imprimirBloque(Bloque *b, int color){
 	cambiarColorFuente(color);
-	moverCursor(c.x, c.y);
+	moverCursor(b->x, b->y);
 	printf("O");
 	cambiarColorFuente(0x0F);
 }
@@ -305,10 +278,11 @@ Serpiente *crearSerpiente(){
 	return serpiente;
 }
 
-Bloque *crearBloque (int x, int y){
+Bloque *crearBloque (Coordenadas c,char caracter){
 	Bloque *bloque = (Bloque *)malloc(sizeof(Bloque));
-	bloque->x = x;
-	bloque->y = y;
+	bloque->x = c.x;
+	bloque->y = c.y;
+	bloque->valor = caracter;
 	bloque->siguiente = NULL;
 	bloque->anterior = NULL;
 	return bloque;
@@ -338,121 +312,20 @@ void liberarMemoria(Serpiente *serpiente){
 }
 
 void inicializarSerpiente(Serpiente *serpiente){
-	Bloque *b1 = crearBloque(42,16);
-	Bloque *b2 = crearBloque(41,16);
-	Bloque *b3 = crearBloque(40,16);
-	Bloque *b4 = crearBloque(39,16);
-	Bloque *b5 = crearBloque(38,16);
-	agregarBloque(serpiente, b5);
-	agregarBloque(serpiente, b4);
-	agregarBloque(serpiente, b3);
-	agregarBloque(serpiente, b2);
-	agregarBloque(serpiente, b1);
+	Coordenadas c[5];
+	for (int i = 0;i<5;i++){
+		c[i].x = 38+i;
+		c[i].y = 16;
+		Bloque *b = crearBloque(c[i],'O');
+		agregarBloque(serpiente, b);
+	}
 }
 
 void imprimirSerpiente(Serpiente *serpiente){
 	Bloque *aux = serpiente->cabeza;
-	Coordenadas c;
 	while(aux != NULL){
-		c.x = aux->x;
-		c.y = aux->y;
-		imprimirBloque(c,0x0A);
+		imprimirBloque(aux,0x0A);
 		aux = aux->siguiente;
 	}
 }
 
-BOOL colisionBola(Serpiente *s, Bloque *bola){
-	if(s->cabeza->x == bola->x && s->cabeza->y == bola->y){
-		return TRUE;
-	}
-	return FALSE;
-}
-
-BOOL colisionEscenarios(Serpiente *s, int ESCENARIO){
-	Coordenadas c={s->cabeza->x, s->cabeza->y};
-	BOOL colision = FALSE;
-	switch(ESCENARIO){
-		case ESCENARIO1:
-			colision = colisionEscen1(c);
-			break;
-		case ESCENARIO2:
-			colision = colisionEscen2(c);
-			break;
-		case ESCENARIO3:
-			colision = colisionEscen3(c);
-			break;
-	}
-	return colision;
-}
-
-BOOL colisionEscen1(Coordenadas c){
-	if(c.x == 0 || c.x == COLS-1 || c.y == 0 || c.y == ROWS-1){
-		cambiarColorFuente(0x04);
-		moverCursor(c.x, c.y);
-		if(c.x==0 || c.x == COLS-1)
-			printf("%c", 219);
-		else if(c.y == 0)
-			printf("%c", 220);
-		else
-			printf("%c", 223);
-		cambiarColorFuente(0x0F);
-		return TRUE;
-	}
-	return FALSE;
-}
-
-BOOL colisionEscen2(Coordenadas c){
-	if((c.x == 0 || c.x == COLS-1) && ((c.y >=0 && c.y < 11) || (c.y > 18 && c.y <= ROWS-1))){
-		cambiarColorFuente(0x04);
-		moverCursor(c.x, c.y);
-		printf("%c", 219);
-		cambiarColorFuente(0x0F);
-		return TRUE;
-	}else if((c.y == 0 || c.y == ROWS-1) && ((c.x >= 0 && c.x < 35) || (c.x > 44 && c.x <= COLS-1))){
-		cambiarColorFuente(0x04);
-		moverCursor(c.x, c.y);
-		if(c.y == 0)
-			printf("%c", 220);
-		else
-			printf("%c", 223);
-		cambiarColorFuente(0x0F);
-		return TRUE;
-	}
-	return FALSE;
-}
-
-BOOL colisionEscen3(Coordenadas c){
-	BOOL colision = colisionEscen2(c);
-	if((c.x==13 || c.x==66) && (c.y >= 10 && c.y <= 19)){
-		cambiarColorFuente(0x04);
-		moverCursor(c.x, c.y);
-		printf("%c", 219);
-		cambiarColorFuente(0x0F);
-		colision = TRUE;
-	}else if((c.y==6 || c.y==23) && (c.x >= 27 && c.x <= 52)){
-		cambiarColorFuente(0x04);
-		moverCursor(c.x, c.y);
-		printf("%c", 219);
-		cambiarColorFuente(0x0F);
-		colision = TRUE;
-	}
-	return colision;
-}
-
-BOOL colisionSerpiente(Serpiente *s){
-	Bloque *aux = s->cola;
-	BOOL colision = FALSE;
-	Coordenadas c;
-	c.x = s->cabeza->x;
-	c.y = s->cabeza->y;
-	while(aux->anterior != NULL){
-		if(aux->x == c.x && aux->y == c.y){
-			colision = TRUE;
-			break;
-		}
-		aux = aux->anterior;
-	}
-	if(colision)
-		imprimirBloque(c,0x04);
-	return colision;
-}
