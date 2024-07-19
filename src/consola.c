@@ -21,3 +21,12 @@ void cambiarColorFuente(WORD color) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(hConsole, color);
 }
+
+void disableQuickEditMode() {
+    HANDLE hInput;
+    DWORD prev_mode;
+
+    hInput = GetStdHandle(STD_INPUT_HANDLE);
+    GetConsoleMode(hInput, &prev_mode);
+    SetConsoleMode(hInput, prev_mode & ~ENABLE_QUICK_EDIT_MODE);
+}
