@@ -12,5 +12,15 @@ BOOL colisionEscen1(Coordenadas);
 BOOL colisionEscen2(Coordenadas);
 BOOL colisionEscen3(Coordenadas);
 BOOL colisionPortal(Serpiente*);
+BOOL colisionPortalH(Serpiente*);
+BOOL colisionPortalV(Serpiente*);
+BOOL colisionColaH(Serpiente*);
+BOOL colisionColaV(Serpiente*);
+void matarSerpiente(Serpiente*,int);
+void encenderPortalHorizontal();
+void encenderPortalVertical();
+void apagarPortalHorizontal();
+void apagarPortalVertical();
+void teletransportar(Serpiente*);
 
 #endif //COLISIONES_H

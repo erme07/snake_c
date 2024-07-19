@@ -8,5 +8,6 @@ void dibujarEscenario(int);
 void escenario_1(void);
 void escenario_2(void);
 void escenario_3(void);
+void limpiarEscenario();
 
 #endif //ESCENARIOS_H

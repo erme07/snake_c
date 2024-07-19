@@ -1,8 +1,10 @@
 #ifndef ESTRUCTURAS_H
 #define ESTRUCTURAS_H
 
-#define ROWS 30
-#define COLS 80
+#define OFFSETX 	25
+#define OFFSETY 	0
+#define ROWS			20
+#define COLS 			60
 
 enum DIRECCIONES{
 	ARRIBA, 
@@ -12,7 +14,7 @@ enum DIRECCIONES{
 };
 
 enum ESCENARIOS{
-	ESCENARIO1, 
+	ESCENARIO1 = 1, 
 	ESCENARIO2, 
 	ESCENARIO3
 };
@@ -23,9 +25,9 @@ typedef struct coordenadas{
 }Coordenadas;
 
 typedef struct bloque{
-	int x;
-	int y;
+	Coordenadas posicion;
 	char valor;
+	int color;
 	struct bloque *siguiente;
 	struct bloque *anterior;
 }Bloque;
