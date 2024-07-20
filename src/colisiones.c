@@ -2,7 +2,9 @@
 #include "../include/colisiones.h"
 
 BOOL colisionBola(Serpiente *s, Bloque *bola){
-	if(s->cabeza->posicion.x == bola->posicion.x && s->cabeza->posicion.y == bola->posicion.y){
+	if(bola==NULL)
+		return FALSE;
+	else if(s->cabeza->posicion.x == bola->posicion.x && s->cabeza->posicion.y == bola->posicion.y){
 		return TRUE;
 	}
 	return FALSE;
@@ -242,4 +244,31 @@ void teletransportar(Serpiente *s){
     s->cabeza->posicion.y = ROWS-2+OFFSETY;
   else if(s->cabeza->posicion.y == ROWS-1+OFFSETY)
     s->cabeza->posicion.y = 1+OFFSETY;
+}
+
+int detectarColisiones(Serpiente *s, Bloque *b,Bloque *bt,Bloque*bm, int ESCEN){
+	if( (ESCEN == ESCENARIO2 || ESCEN == ESCENARIO3 )){
+		if(colisionPortalV(s)){
+			return COLISION_PORTALV;
+		}else if(colisionPortalH(s)){
+			return COLISION_PORTALH;
+		}
+		if(colisionColaH(s)){
+			return COLISION_COLAH;
+		}else if(colisionColaV(s)){
+			return COLISION_COLAV;
+		}
+	}
+	if(colisionBola(s, b))
+		return COLISION_BOLA;
+	else if(colisionBola(s, bt))
+			return COLISION_BOLATEMP;
+	else if(colisionBola(s, bm))
+			return COLISION_BOLAMOVIL;
+	else if(colisionEscenarios(s, ESCEN))
+		return COLISION_ESCENARIO;
+	else if(colisionSerpiente(s))
+		return COLISION_SERPIENTE;
+	else 
+		return 0;
 }
