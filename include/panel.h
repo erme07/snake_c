@@ -14,5 +14,7 @@ void pintarMarco();
 void imprimirLogo();
 void borrarLogo();
 void borrarMenu();
+void imprimirGameOver();
+void estadisticas(Serpiente*,int,int);
 
 #endif //MENU_H
