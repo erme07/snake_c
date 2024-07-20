@@ -3,9 +3,15 @@
 
 #include <windows.h>
 
+#define IDI_ICON1 101
+
 void moverCursor(int, int);
-void hideCursor(void);
+void ocultarCursor(void);
 void cambiarColorFuente(WORD);
-void disableQuickEditMode(void);
+void deshabilitarModoEdicionRapida(void);
+void establecerTamanioConsola(int,int);
+void dehabilitarRedimension();
+void eliminarScroll();
+void cambiarIcono();
 
 #endif //CONSOLA_H
