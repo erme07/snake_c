@@ -1,7 +1,7 @@
 #ifndef MENU_H
 #define MENU_H
 
-#include "consola.h"
+//#include "consola.h"
 #include "escenarios.h"
 #include "estructuras.h"
 
@@ -9,7 +9,7 @@
 #define ROWSPANEL 20
 
 int menu();
-BOOL iniciarJuego(int*);
+int seleccionarEscenario();
 void pintarMarco();
 void imprimirLogo();
 void borrarLogo();

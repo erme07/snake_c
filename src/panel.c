@@ -72,18 +72,19 @@ int menu(){
   return opcion;
 }
 
-BOOL iniciarJuego(int *escenario){
-  int opcion=1;
+int seleccionarEscenario(){
+  int escenario;
   pintarMarco();
   moverCursor(OFFSETMENUX+9, 3);
   cambiarColorFuente(0x0A);
   printf("SNAKE!");
   imprimirLogo();
-  opcion = menu();
-  *escenario=opcion;
-  borrarLogo();
-  borrarMenu();
-  return TRUE;
+  escenario = menu();
+  if(escenario!=4){
+    borrarLogo();
+    borrarMenu();
+  }
+  return escenario;
 }
 
 void pintarMarco(){

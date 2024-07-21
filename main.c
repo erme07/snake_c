@@ -13,13 +13,17 @@
 #define FRAMERATE 20 //60fps aprox
 //#define VELOCIDAD 80
 
-
+BOOL iniciarJuego(Serpiente**,Bloque**,int);
 void liberarMemoria(Serpiente*);
 
 int establecerVelocidad(int,int);
 int definirNivel(Serpiente*);
 
 void pausarReanudarJuego(BOOL *pausa);
+void gestionarBolaTemporal(Serpiente**,Bloque**,int,BOOL*,int);
+Bloque *generarBolaMovil(Serpiente**,int,BOOL*,int,int*,int*);
+void actualizarPosicion(Serpiente*, int, int);
+BOOL direccionValida(int direccion, int nuevadireccion);
 
 LARGE_INTEGER inicio, frecuencia, tiempoPausado;
 BOOL cronometroPausado = FALSE;
@@ -88,8 +92,8 @@ int main(){
 	Serpiente *serpiente = NULL;
 	Bloque *bloque = NULL;
 	Bloque *bolatemporal=NULL, *bolamovil=NULL;
-	double intervaloActualizacion;
-	double ultimoTiempoActualizado;
+	double intervaloActualizacion = 0.5; // Actualiza el tiempo en pantalla cada 0.5 segundos.
+	double ultimoTiempoActualizado = 0;
 	Coordenadas cola;
 
 	SetConsoleTitle("SNAKE");
@@ -102,33 +106,33 @@ int main(){
 	srand(time(NULL));
 	dibujarEscenario(ESCENARIO);
 	
-	start = iniciarJuego(&ESCENARIO);
-	
-	if(start){
-		serpiente = crearSerpiente();
-		bloque = generarBola(serpiente,ESCENARIO,0x0F);
-		inicializarSerpiente(serpiente);
-		imprimirSerpiente(serpiente);
-		iniciarCronometro();
-		cambiarColorFuente(0xE);
-		moverCursor(OFFSETMENUX+9, 10);
-		printf("00:00");
-		intervaloActualizacion = 0.5; // Actualiza el tiempo en pantalla cada 0.5 segundos.
-  	ultimoTiempoActualizado = 0;
-	}
+	ESCENARIO = seleccionarEscenario();
+	start = iniciarJuego(&serpiente,&bloque,ESCENARIO);
 
 	while(!game_over && start){
 		cola.x = serpiente->cola->posicion.x;
 		cola.y = serpiente->cola->posicion.y;
+
+
+		// if (GetAsyncKeyState(VK_UP) & 0x8000) {
+    //     gestionarDireccion(&direccion,ARRIBA,&VELOCIDAD);
+    // } else if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
+    //     gestionarDireccion(&direccion,ABAJO,&VELOCIDAD);
+    // } else if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
+    //     gestionarDireccion(&direccion,IZQUIERDA,&VELOCIDAD);
+    // } else if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
+    //     gestionarDireccion(&direccion,DERECHA,&VELOCIDAD);
+    // }
+    // actualizarPosicion(serpiente,direccion,VELOCIDAD);
+    // manejarColisiones();
+
 
 		if(GetAsyncKeyState(VK_UP) & 0x8000){
 			if(direccion == ARRIBA)
 				VELOCIDAD = 20;
 			else if(direccion != ABAJO){
 				direccion = ARRIBA;
-				actualizarCoordenadas(serpiente, direccion);
-				Sleep(VELOCIDAD);
-				moverSerpiente(serpiente);
+				actualizarPosicion(serpiente,direccion,VELOCIDAD);
 				switch(detectarColisiones(serpiente, bloque,bolatemporal,bolamovil, ESCENARIO)){
 					case COLISION_BOLA:
 						comerBola(serpiente, bloque, cola);
@@ -187,9 +191,7 @@ int main(){
 				VELOCIDAD = 20;
 			else if(direccion != ARRIBA){
 				direccion = ABAJO;
-				actualizarCoordenadas(serpiente, direccion);
-				Sleep(VELOCIDAD);
-				moverSerpiente(serpiente);
+				actualizarPosicion(serpiente,direccion,VELOCIDAD);
 				switch(detectarColisiones(serpiente, bloque,bolatemporal, bolamovil,ESCENARIO)){
 					case COLISION_BOLA:
 						comerBola(serpiente, bloque, cola);
@@ -248,9 +250,7 @@ int main(){
 				VELOCIDAD = 10;
 			else if(direccion != DERECHA){
 				direccion = IZQUIERDA;
-				actualizarCoordenadas(serpiente, direccion);
-				Sleep(VELOCIDAD);
-				moverSerpiente(serpiente);
+				actualizarPosicion(serpiente,direccion,VELOCIDAD);
 				switch(detectarColisiones(serpiente, bloque, bolatemporal,bolamovil,ESCENARIO)){
 					case COLISION_BOLA:
 						comerBola(serpiente, bloque, cola);
@@ -309,9 +309,7 @@ int main(){
 				VELOCIDAD = 10;
 			else if(direccion != IZQUIERDA){
 				direccion = DERECHA;
-				actualizarCoordenadas(serpiente, direccion);
-				Sleep(VELOCIDAD);
-				moverSerpiente(serpiente);
+				actualizarPosicion(serpiente,direccion,VELOCIDAD);
 				switch(detectarColisiones(serpiente, bloque,bolatemporal, bolamovil,ESCENARIO)){
 					case COLISION_BOLA:
 						comerBola(serpiente, bloque, cola);
@@ -365,6 +363,8 @@ int main(){
 				CICLOS = 0;
 			}
 		}
+
+		// aparte -------------------
 		if(CICLOS >= VELOCIDAD){
 			actualizarCoordenadas(serpiente, direccion);
 			moverSerpiente(serpiente);
@@ -493,29 +493,88 @@ int main(){
 
 		nivel = definirNivel(serpiente);
 		VELOCIDAD = establecerVelocidad(direccion, nivel);
-
 		estadisticas(serpiente,puntaje,nivel);
+
 		double tiempoActual = obtenerTiempo();
 		if ((tiempoActual - ultimoTiempoActualizado >= intervaloActualizacion) && !pause) {
 				imprimirCronometro(&segundos,&minutos);
 				ultimoTiempoActualizado = tiempoActual;
 		}
-		
-		if(!btemporal && (segundos == 10 ||segundos==25 || segundos==39)){
-			bolatemporal = generarBola(serpiente,ESCENARIO,0x6);
-			btemporal = TRUE;
-		}
-		if(btemporal && (segundos == 14 ||segundos==29 || segundos==43)){
-			limpiarBloque(bolatemporal->posicion.x,bolatemporal->posicion.y);
-			free(bolatemporal);
-			bolatemporal = NULL;
-			btemporal = FALSE;
-		}
+
+		//si se cumplen las condiciones, se genera una bola temporal
+		gestionarBolaTemporal(&serpiente, &bolatemporal, ESCENARIO, &btemporal, segundos);
+		//si se cumplen las condiciones, se genera una bola movil
+		Bloque *resultadoTemporal = generarBolaMovil(&serpiente, ESCENARIO, &bmovil, segundos, &direccionbolamovil, &VELOCIDADBOLAMOVIL);
+		if(resultadoTemporal != NULL)
+			bolamovil = resultadoTemporal;
 
 
-		if(!bmovil && (segundos == 53)){
-			bolamovil = generarBola(serpiente, ESCENARIO, 0x4);
-			
+	}
+	//Fuera del loop
+
+	if(game_over && start){
+		moverCursor(2,2);
+		system("pause");
+	}
+	liberarMemoria(serpiente);
+	serpiente = NULL;
+	if(bloque!=NULL)
+		free(bloque);
+	bloque = NULL;
+	return 0;
+}
+
+
+// ----------- funciones -------------
+
+void actualizarPosicion(Serpiente *s, int direccion, int VELOCIDAD) {
+    actualizarCoordenadas(s, direccion);
+    Sleep(VELOCIDAD);
+    moverSerpiente(s); //solo imprime la cabeza
+}
+
+
+// void manejarEntradaDeTeclado(int direccion) {
+//     if (GetAsyncKeyState(VK_UP) & 0x8000) {
+//         gestionarDireccion(direccion,ARRIBA);
+//     } else if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
+//         gestionarDireccion(direccion,ABAJO);
+//     } else if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
+//         gestionarDireccion(direccion,IZQUIERDA);
+//     } else if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
+//         gestionarDireccion(direccion,DERECHA);
+//     }
+//     actualizarPosicion();
+//     manejarColisiones();
+// }
+
+void gestionarDireccion(int *direccion,int nuevadireccion,int *VELOCIDAD) {
+	if(*direccion==nuevadireccion)
+		*VELOCIDAD = 20;//velocidad turbo
+	else if (direccionValida(*direccion, nuevadireccion)) {
+		*direccion = nuevadireccion;
+	}
+}
+
+BOOL direccionValida(int direccion, int nuevadireccion) {
+	if(nuevadireccion == ARRIBA && direccion == ABAJO)
+		return FALSE;
+	if(nuevadireccion == ABAJO && direccion == ARRIBA)
+		return FALSE;
+	if(nuevadireccion == IZQUIERDA && direccion == DERECHA)
+		return FALSE;
+	if(nuevadireccion == DERECHA && direccion == IZQUIERDA)
+		return FALSE;
+	return TRUE;
+}
+
+Bloque *generarBolaMovil(Serpiente **s, int ESCENARIO, BOOL *bmovil, int segundos, int *direccionbolamovil, int *VELOCIDADBOLAMOVIL){
+	if(!(*bmovil) && (segundos == 53)){
+			Bloque *bolamovil = generarBola(*s, ESCENARIO, 0x4);
+			if (bolamovil == NULL) {
+				printf("Error: generarBola devolvió NULL\n");
+				return NULL;
+			}
 			Coordenadas c = {bolamovil->posicion.x,bolamovil->posicion.y};
 			int distanciaderecha = COLS + OFFSETX - c.x;
 			int distanciaizquierda = c.x - OFFSETX;
@@ -523,35 +582,53 @@ int main(){
 			int distanciabajo = ROWS + OFFSETY - c.y;
 			if(distanciarriba<3 || distanciabajo<3){
 				if(distanciabajo<distanciarriba)
-					direccionbolamovil = ARRIBA;
-				else direccionbolamovil = ABAJO;
-				VELOCIDADBOLAMOVIL = 130;
+					*direccionbolamovil = ARRIBA;
+				else *direccionbolamovil = ABAJO;
+				*VELOCIDADBOLAMOVIL = 130;
 			}else{
 				if(distanciaderecha<distanciaizquierda)
-					direccionbolamovil=IZQUIERDA;
-				else direccionbolamovil=DERECHA;
-				VELOCIDADBOLAMOVIL = 100;
+					*direccionbolamovil=IZQUIERDA;
+				else *direccionbolamovil=DERECHA;
+				*VELOCIDADBOLAMOVIL = 100;
 			}
-			bmovil = TRUE;
-		}
-		
-
-
-	}
-	
-	liberarMemoria(serpiente);
-	serpiente = NULL;
-	free(bloque);
-	bloque = NULL;
-	moverCursor(2,ROWS+2);
-	system("pause");
-	return 0;
+			*bmovil = TRUE;
+			return bolamovil;
+		}else
+			return NULL;
 }
 
 
-// ----------- funciones -------------
+void gestionarBolaTemporal(Serpiente **s, Bloque **b ,int ESCEN, BOOL *btemp, int segundos){
+	if(!(*btemp) && (segundos == 10 ||segundos==25 || segundos==39)){
+		*b = generarBola(*s,ESCEN,0x6);
+		*btemp = TRUE;
+	}
+	if(*btemp && (segundos == 14 ||segundos==29 || segundos==43)){
+			limpiarBloque((*b)->posicion.x,(*b)->posicion.y);
+			free(*b);
+			*b = NULL;
+			*btemp = FALSE;
+		}
+}
+
+BOOL iniciarJuego(Serpiente **s, Bloque **b, int ESCEN){
+	if(ESCEN!=4){
+		*s = crearSerpiente();
+		*b = generarBola(*s,ESCEN,0x0F);
+		inicializarSerpiente(*s);
+		imprimirSerpiente(*s);
+		iniciarCronometro();
+		cambiarColorFuente(0xE);
+		moverCursor(OFFSETMENUX+9, 10);
+		printf("00:00");
+		return TRUE;
+	}else
+		return FALSE;
+}
 
 void liberarMemoria(Serpiente *serpiente){
+	if(serpiente==NULL)
+		return;
 	Bloque *aux = serpiente->cabeza;
 	while(aux != NULL){
 		Bloque *temp = aux;

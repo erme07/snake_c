@@ -17,6 +17,10 @@ void agregarBloque(Serpiente *serpiente, Bloque *bloque){
 
 Bloque *crearBloque (Coordenadas c,char caracter,int color){
 	Bloque *bloque = (Bloque *)malloc(sizeof(Bloque));
+	if (bloque == NULL) {
+		// No se pudo asignar memoria para el bloque
+		return NULL;
+  }
 	bloque->posicion.x = c.x;
 	bloque->posicion.y = c.y;
 	bloque->valor = caracter;
