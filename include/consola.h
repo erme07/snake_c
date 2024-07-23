@@ -13,5 +13,6 @@ void establecerTamanioConsola(int,int);
 void dehabilitarRedimension();
 void eliminarScroll();
 void cambiarIcono();
+void limpiarBuffer();
 
 #endif //CONSOLA_H

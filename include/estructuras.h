@@ -37,6 +37,11 @@ typedef struct coordenadas{
 	int y;
 }Coordenadas;
 
+typedef struct tiempo{
+	int minutos;
+	int segundos;
+}Tiempo;
+
 typedef struct bloque{
 	Coordenadas posicion;
 	char valor;

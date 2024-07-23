@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include "../include/escenarios.h"
 
+
+
+
 void escenario_1(){
 	moverCursor(OFFSETX, OFFSETY);
 	for(int i=0;i<COLS;i++)

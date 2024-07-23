@@ -15,6 +15,7 @@ void imprimirLogo();
 void borrarLogo();
 void borrarMenu();
 void imprimirGameOver();
-void estadisticas(Serpiente*,int,int);
+void estadisticas(Serpiente*,int,int,BOOL);
+int menuGameOver();
 
 #endif //MENU_H

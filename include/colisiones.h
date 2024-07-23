@@ -23,5 +23,7 @@ void apagarPortalHorizontal();
 void apagarPortalVertical();
 void teletransportar(Serpiente*);
 int detectarColisiones(Serpiente*,Bloque*,Bloque*,Bloque*,int);
+void establecerMatriz(int,int[ROWS][COLS]);
+;
 
 #endif //COLISIONES_H

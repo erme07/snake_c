@@ -74,11 +74,6 @@ int menu(){
 
 int seleccionarEscenario(){
   int escenario;
-  pintarMarco();
-  moverCursor(OFFSETMENUX+9, 3);
-  cambiarColorFuente(0x0A);
-  printf("SNAKE!");
-  imprimirLogo();
   escenario = menu();
   if(escenario!=4){
     borrarLogo();
@@ -139,12 +134,56 @@ void borrarMenu(){
 }
 
 void imprimirGameOver(){
-	printf("██▄ ██▄ ██▄█▄ ██▄  ██▄ █ █ ██▄ ██▄");
-	printf("█▄▄ █▄█ █ █ █ █▄▄  █ █ █ █ █▄▄ █▄▀ ");
-	printf("█▄█ █ █ █   █ █▄▄  ▀█▀ ▀█▀ █▄▄ █ █");
+  moverCursor(OFFSETX+13, 7);
+  printf("%c%c%c %c%c%c %c%c%c%c%c %c%c%c  %c%c%c %c %c %c%c%c %c%c%c\n",219,219,220, 219,219,220, 219,219,220,219,220, 219,219,220, 219,219,220, 219,219, 219,219,220, 219,219,220);
+  moverCursor(OFFSETX+13, 8);
+  printf("%c%c%c %c%c%c %c %c %c %c%c%c  %c %c %c %c %c%c%c %c%c%c\n",219,220,220, 219,220,219, 219,219,219, 219,220,220, 219,219, 219,219, 219,220,220, 219,220,223);
+  moverCursor(OFFSETX+13, 9);
+  printf("%c%c%c %c %c %c %c %c %c%c%c  %c%c%c %c%c%c %c%c%c %c %c\n",219,220,219, 219,219, 219,219,219, 219,220,220, 223,219,223, 223,219,223, 219,220,220, 219,219);
 }
 
-void estadisticas(Serpiente*s,int puntaje,int nivel){
+int menuGameOver(){
+  int opcion = 1,tecla;
+
+  cambiarColorFuente(0x0F);
+  moverCursor(OFFSETX+27, 13);
+  printf("<-  ->");
+
+  do{
+    moverCursor(OFFSETX+18, 11);
+    switch(opcion) {
+      case 1:
+        cambiarColorFuente(0x06);
+        printf("reiniciar ");
+        cambiarColorFuente(0x0F);
+        printf("| menu | salir");
+        break;
+      case 2:
+        cambiarColorFuente(0x0F);
+        printf("reiniciar | ");
+        cambiarColorFuente(0x06);
+        printf("menu");
+        cambiarColorFuente(0x0F);
+        printf(" | salir");
+        break;
+      case 3:
+        cambiarColorFuente(0x0F);
+        printf("reiniciar | menu | ");
+        cambiarColorFuente(0x06);
+        printf("salir");
+        break;
+    }
+    tecla = getch();
+    if(tecla==75 && opcion>1){
+      opcion--;
+    }else if(tecla==77 && opcion<3){
+      opcion++;
+    }
+  }while(tecla!=ENTER);
+  return opcion;
+}
+
+void estadisticas(Serpiente*s,int puntaje,int nivel,BOOL pausa){
   cambiarColorFuente(0x0F);
   moverCursor(OFFSETMENUX+5, 5);
   printf("Puntaje: ");
@@ -170,8 +209,18 @@ void estadisticas(Serpiente*s,int puntaje,int nivel){
   cambiarColorFuente(0x4);
   printf("%c: 50pts x Nvl", 254);
   cambiarColorFuente(0xF);
-	moverCursor(OFFSETMENUX+4, 12);
-	printf("pausar/reanudar");
+  moverCursor(OFFSETMENUX+4, 12);
+  if(pausa){
+    printf("pausar/");
+    cambiarColorFuente(0x6);
+    printf("reanudar");
+    cambiarColorFuente(0xF);
+  }else{
+    cambiarColorFuente(0x6);
+    printf("pausar");
+    cambiarColorFuente(0xF);
+    printf("/reanudar");
+  }
 	moverCursor(OFFSETMENUX+7, 13);
 	printf("(ESPACIO)");
 }

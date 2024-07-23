@@ -60,3 +60,8 @@ void cambiarIcono(){
     SendMessage(wConsola, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
     SendMessage(wConsola, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
 }
+
+void limpiarBuffer(){
+    HANDLE hConsoleInput = GetStdHandle(STD_INPUT_HANDLE);
+    FlushConsoleInputBuffer(hConsoleInput);
+}

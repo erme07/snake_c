@@ -37,8 +37,34 @@ void imprimirBloque(Bloque *b){
 	cambiarColorFuente(0x0F);
 }
 
-Bloque *generarBola(Serpiente*s,int ESCEN,int color){
-	Bloque *aux = s->cola;
+// Bloque *generarBola(Serpiente*s,int ESCEN,int color){
+// 	Bloque *aux = s->cola;
+// 	Coordenadas c = coordenadasAleatorias();
+// 	BOOL coordenadasOcupadas;
+// 	do{
+// 		coordenadasOcupadas = FALSE;
+// 		c = coordenadasAleatorias();
+// 		aux = s->cola;
+// 		while(aux != NULL) {
+// 			if(aux->posicion.x == c.x && aux->posicion.y == c.y) {
+// 				coordenadasOcupadas = TRUE;
+// 				break; // Salir del bucle si se encuentra una coincidencia
+// 			}
+// 			if(ESCEN == ESCENARIO3 && colisionEscen3(c)){
+// 				coordenadasOcupadas = TRUE;
+// 				break;
+// 			}
+// 			aux = aux->anterior;
+// 		}
+// 	} while(coordenadasOcupadas); // Repetir si las coordenadas están ocupadas
+// 	Bloque *bola = crearBloque(c,254,color); //254 craracter ascii
+// 	imprimirBloque(bola);
+// 	return bola;
+// }
+
+
+void generarBola(Serpiente*s,int ESCEN,int color){
+	Bloque *aux = s->cabeza;
 	Coordenadas c = coordenadasAleatorias();
 	BOOL coordenadasOcupadas;
 	do{
@@ -54,7 +80,7 @@ Bloque *generarBola(Serpiente*s,int ESCEN,int color){
 				coordenadasOcupadas = TRUE;
 				break;
 			}
-			aux = aux->anterior;
+			aux = aux->siguiente;
 		}
 	} while(coordenadasOcupadas); // Repetir si las coordenadas están ocupadas
 	Bloque *bola = crearBloque(c,254,color); //254 craracter ascii
