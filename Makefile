@@ -6,6 +6,7 @@ SRC_DIR=./src
 INCLUDE_DIR=./include
 OBJ_DIR=./obj
 RES_DIR=./res
+LDFLAGS=-lwinmm
 
 # Archivos de origen
 SRC=./main.c $(SRC_DIR)/consola.c $(SRC_DIR)/escenarios.c $(SRC_DIR)/colisiones.c $(SRC_DIR)/panel.c $(SRC_DIR)/serpiente.c $(SRC_DIR)/cronometro.c
@@ -24,7 +25,7 @@ all: create_dirs $(EXECUTABLE)
 
 # Enlazar ejecutable
 $(EXECUTABLE): $(OBJ)
-	$(CC) -o $@ $(OBJ) $(CFLAGS)
+	$(CC) -o $@ $(OBJ) $(CFLAGS) $(LDFLAGS)
 
 # Compilar archivos fuente a archivos objeto
 $(OBJ_DIR)/main.o: ./main.c $(INCLUDE_DIR)/consola.h $(INCLUDE_DIR)/escenarios.h $(INCLUDE_DIR)/colisiones.h $(INCLUDE_DIR)/estructuras.h $(INCLUDE_DIR)/panel.h $(INCLUDE_DIR)/cronometro.h | create_dirs

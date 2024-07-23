@@ -10,6 +10,9 @@
 #include "include/panel.h"
 #include "include/serpiente.h"
 #include "include/cronometro.h"
+#include <mmsystem.h>
+
+#pragma comment(lib, "winmm.lib")
 
 #define FRAMERATE 20 //50fps aprox
 
@@ -103,6 +106,7 @@ int main(){
 					actualizarPosicion(serpiente,direccion,VELOCIDAD);
 					switch(detectarColisiones(serpiente, bloque,bolatemporal,bolamovil, ESCENARIO)){
 						case COLISION_BOLA:
+							PlaySound(TEXT("./res/sound.wav"), NULL, SND_FILENAME | SND_ASYNC);
 							comerBola(serpiente, bloque, cola);
 							Sleep(VELOCIDAD);
 							bloque = generarBola(serpiente,ESCENARIO,0x0F);
@@ -122,6 +126,7 @@ int main(){
 							break;
 						case COLISION_ESCENARIO:
 						case COLISION_SERPIENTE:
+							PlaySound(TEXT("./res/dead.wav"), NULL, SND_FILENAME | SND_ASYNC);
 							game_over = TRUE;
 							break;
 						case COLISION_PORTALV:
@@ -160,6 +165,7 @@ int main(){
 					actualizarPosicion(serpiente,direccion,VELOCIDAD);
 					switch(detectarColisiones(serpiente, bloque,bolatemporal, bolamovil,ESCENARIO)){
 						case COLISION_BOLA:
+							PlaySound(TEXT("./res/sound.wav"), NULL, SND_FILENAME | SND_ASYNC);
 							comerBola(serpiente, bloque, cola);
 							Sleep(VELOCIDAD);
 							bloque = generarBola(serpiente,ESCENARIO,0x0F);
@@ -179,6 +185,7 @@ int main(){
 							break;
 						case COLISION_ESCENARIO:
 						case COLISION_SERPIENTE:
+							PlaySound(TEXT("./res/dead.wav"), NULL, SND_FILENAME | SND_ASYNC);
 							game_over = TRUE;
 							break;
 						case COLISION_PORTALV:
@@ -217,6 +224,7 @@ int main(){
 					actualizarPosicion(serpiente,direccion,VELOCIDAD);
 					switch(detectarColisiones(serpiente, bloque, bolatemporal,bolamovil,ESCENARIO)){
 						case COLISION_BOLA:
+							PlaySound(TEXT("./res/sound.wav"), NULL, SND_FILENAME | SND_ASYNC);
 							comerBola(serpiente, bloque, cola);
 							Sleep(VELOCIDAD);
 							bloque = generarBola(serpiente,ESCENARIO,0x0F);
@@ -236,6 +244,7 @@ int main(){
 							break;
 						case COLISION_ESCENARIO:
 						case COLISION_SERPIENTE:
+							PlaySound(TEXT("./res/dead.wav"), NULL, SND_FILENAME | SND_ASYNC);
 							game_over = TRUE;
 							break;
 						case COLISION_PORTALV:
@@ -274,6 +283,7 @@ int main(){
 					actualizarPosicion(serpiente,direccion,VELOCIDAD);
 					switch(detectarColisiones(serpiente, bloque,bolatemporal, bolamovil,ESCENARIO)){
 						case COLISION_BOLA:
+							PlaySound(TEXT("./res/sound.wav"), NULL, SND_FILENAME | SND_ASYNC);
 							comerBola(serpiente, bloque, cola);
 							Sleep(VELOCIDAD);
 							bloque = generarBola(serpiente,ESCENARIO,0x0F);
@@ -293,6 +303,7 @@ int main(){
 							break;
 						case COLISION_ESCENARIO:
 						case COLISION_SERPIENTE:
+							PlaySound(TEXT("./res/dead.wav"), NULL, SND_FILENAME | SND_ASYNC);
 							game_over = TRUE;
 							break;
 						case COLISION_PORTALV:
@@ -330,6 +341,7 @@ int main(){
 				moverSerpiente(serpiente);
 				switch(detectarColisiones(serpiente, bloque,bolatemporal, bolamovil,ESCENARIO)){
 					case COLISION_BOLA:
+						PlaySound(TEXT("./res/sound.wav"), NULL, SND_FILENAME | SND_ASYNC);
 						comerBola(serpiente, bloque, cola);
 						Sleep(VELOCIDAD);
 						bloque = generarBola(serpiente,ESCENARIO,0x0F);
@@ -349,6 +361,7 @@ int main(){
 						break;
 					case COLISION_ESCENARIO:
 					case COLISION_SERPIENTE:
+						PlaySound(TEXT("./res/dead.wav"), NULL, SND_FILENAME | SND_ASYNC);
 						game_over = TRUE;
 						break;
 					case COLISION_PORTALV:
