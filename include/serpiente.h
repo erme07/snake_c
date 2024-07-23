@@ -9,7 +9,7 @@
 void imprimirBloque(Bloque*);
 void limpiarBloque(int, int);
 Bloque *generarBola(Serpiente*,int,int);
-Bloque *crearBloque(Coordenadas,char,int);
+Bloque *crearBloque(Coordenadas);
 void agregarBloque(Serpiente*, Bloque*);
 void comerBola(Serpiente*,Bloque*,Coordenadas);
 Coordenadas coordenadasAleatorias(void);

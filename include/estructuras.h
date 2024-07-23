@@ -1,8 +1,8 @@
 #ifndef ESTRUCTURAS_H
 #define ESTRUCTURAS_H
 
-#define OFFSETX 			26
-#define OFFSETMENUX 	2
+#define OFFSETX 			0//26
+#define OFFSETMENUX 	28//2
 #define OFFSETY 			0
 #define ROWS					20
 #define COLS 					60
@@ -12,6 +12,12 @@ enum DIRECCIONES{
 	ABAJO, 
 	IZQUIERDA, 
 	DERECHA
+};
+enum BLOQUES{
+	COMUN = 4,
+	TEMPORAL,
+	MOVIL,
+	CUERPO
 };
 
 enum ESCENARIOS{

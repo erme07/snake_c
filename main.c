@@ -584,7 +584,7 @@ void gestionarBolaTemporal(Serpiente **s, Bloque **b ,int ESCEN, BOOL *btemp, in
 void inicializarJuego(Serpiente **s, Bloque **b, int ESCEN){
 	
 	*s = crearSerpiente();
-	*b = generarBola(*s,ESCEN,0x0F);
+	generarBola(*s,ESCEN,0x0F);
 	inicializarSerpiente(*s);
 	imprimirSerpiente(*s);
 	borrarLogo();
