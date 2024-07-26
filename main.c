@@ -181,6 +181,19 @@ int main(){
 
 		liberarMemoria(serpiente);
 		serpiente = NULL;
+		
+		if(bolaMovil.bola.estado){
+			MATRIZ[bolaMovil.bola.posicion.y-OFFSETY][bolaMovil.bola.posicion.x-OFFSETX] = 0;
+			bolaMovil.bola.estado = FALSE;
+			bolaMovil.bola.posicion.x = 0;
+			bolaMovil.bola.posicion.y = 0;
+		}
+		if(bolaTemporal.estado){
+			MATRIZ[bolaTemporal.posicion.y-OFFSETY][bolaTemporal.posicion.x-OFFSETX] = 0;
+			bolaTemporal.estado = FALSE;
+			bolaTemporal.posicion.x = 0;
+			bolaTemporal.posicion.y = 0;
+		}
 		terminarJuego(&salir, &reiniciar);
 	} while (game_over && !salir);
 

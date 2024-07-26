@@ -146,8 +146,10 @@ BOOL colisionSerpiente(Serpiente *s){
 		}
 		aux = aux->anterior;
 	}
-	if(colision)
+	if(colision){
+		PlaySound(TEXT("./sound/dead.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		animacionColision(s, tiempoAnimacion(s->largo));
+	}
 	return colision;
 }
 
