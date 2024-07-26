@@ -4,10 +4,10 @@ void imprimirCronometro(Tiempo *t,DWORD inicioCrono, DWORD tiempoPausa) {
 		double tiempo = obtenerTiempo(inicioCrono, tiempoPausa);
 		t->minutos = (int)tiempo / 60;
 		t->segundos = (int)tiempo % 60;
-		cambiarColorFuente(0xE);
+		cambiarColorFuente(AMARILLO);
 		moverCursor(OFFSETMENUX+9,10);
 		printf("%02d:%02d",t->minutos,t->segundos);
-		cambiarColorFuente(0xF);
+		cambiarColorFuente(BLANCO);
 }
 
 void iniciarCronometro(DWORD *inicioCrono) {

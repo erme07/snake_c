@@ -3,6 +3,7 @@
 #include <time.h>
 #include <windows.h>
 #include <conio.h>
+#include <mmsystem.h>
 #include "include/escenarios.h"
 #include "include/consola.h"
 #include "include/colisiones.h"
@@ -12,14 +13,14 @@
 #include "include/cronometro.h"
 
 void inicializarJuego(Serpiente**,Bola*,int[ROWS][COLS]);
-void pausarReanudarJuego(BOOL *pausa,DWORD *inicioPausa, DWORD *tiempoPausa);
-void terminarJuego(BOOL *salir, BOOL *reiniciar);
+void pausarReanudarJuego(BOOL*,DWORD*,DWORD*);
+void terminarJuego(BOOL*,BOOL*);
 void liberarMemoria(Serpiente*);
 int establecerVelocidad(int);
 int definirNivel(Serpiente*);
-void actualizarPosicion(Serpiente*, int, int);
+void actualizarPosicion(Serpiente*,int,int);
 void gestionarBolaTemporal(Serpiente**,int,Bola*);
-void habilitarBolaMovil(Serpiente **, int, Bolamovil *);
+void habilitarBolaMovil(Serpiente **,int,Bolamovil*);
 void gestionarBolaMovil(Serpiente**,Bolamovil*,int*,Coordenadas);
 void gestionarPortales(Serpiente**,int*,int*);
 void detectarBola(Serpiente**,Coordenadas,Bola*,Bola*,Bolamovil*);
@@ -39,9 +40,9 @@ int main(){
 	Serpiente *serpiente;
 	Tiempo tiempo;
 	Coordenadas cola;
-	Bola bolaComun = {{0,0},COMUN,0x0F,10,TRUE};
-	Bola bolaTemporal = {{0,0},TEMPORAL,0x06,25,FALSE};
-	Bolamovil bolaMovil = {{{0,0},MOVIL,0x0C,50,FALSE},100,0};
+	Bola bolaComun = {{0,0},COMUN,BLANCO,10,TRUE};
+	Bola bolaTemporal = {{0,0},TEMPORAL,DORADO,25,FALSE};
+	Bolamovil bolaMovil = {{{0,0},MOVIL,ROJO,50,FALSE},100,0};
 	
 	SetConsoleTitle("SNAKE");
 	establecerTamanioConsola(740,360);
@@ -70,9 +71,9 @@ int main(){
 		system("cls");
 		pintarMarco();
 		moverCursor(OFFSETMENUX+9, 3);
-		cambiarColorFuente(0x0E);
+		cambiarColorFuente(AMARILLO);
 		printf("SNAKE!");
-		cambiarColorFuente(0x0F);
+		cambiarColorFuente(BLANCO);
 		if(!reiniciar){
 			imprimirLogo();
 			dibujarEscenario(ESCENARIO1);
@@ -144,7 +145,7 @@ int main(){
 					actualizarPosicion(serpiente,direccion,VELOCIDAD);
 				game_over = (colisionEscenarios(serpiente, ESCENARIO) || colisionSerpiente(serpiente)) ? TRUE : FALSE;
 				if(game_over)
-					continue;
+						continue;
 				if(ESCENARIO == ESCENARIO2 || ESCENARIO == ESCENARIO3)
 					gestionarPortales(&serpiente,&portalH,&portalV);
 				detectarBola(&serpiente,cola,&bolaComun,&bolaTemporal, &bolaMovil);
@@ -156,7 +157,7 @@ int main(){
 				moverSerpiente(serpiente);
 				game_over = (colisionEscenarios(serpiente, ESCENARIO) || colisionSerpiente(serpiente)) ? TRUE : FALSE;
 				if(game_over)
-					continue;
+						continue;
 				if(ESCENARIO == ESCENARIO2 || ESCENARIO == ESCENARIO3)
 					gestionarPortales(&serpiente,&portalH,&portalV);
 				detectarBola(&serpiente,cola,&bolaComun,&bolaTemporal, &bolaMovil);
@@ -194,25 +195,27 @@ void inicializarJuego(Serpiente **s,Bola *bolaComun,int MATRIZ[ROWS][COLS]){
 	generarBola(*s,bolaComun,MATRIZ);
 	inicializarSerpiente(*s);
 	imprimirSerpiente(*s);
-	cambiarColorFuente(0xE);
+	cambiarColorFuente(AMARILLO);
 	moverCursor(OFFSETMENUX+9, 10);
 	printf("00:00");
 }
 
 void pausarReanudarJuego(BOOL *pausa, DWORD *inicioPausa, DWORD *tiempoPausa) {
 	*pausa = !(*pausa);
+	PlaySound(TEXT("./sound/pausa.wav"), NULL, SND_FILENAME | SND_ASYNC);
 	iniciarPausa(inicioPausa);
-	while (GetAsyncKeyState(VK_SPACE) & 0x8000) 
+	while (GetAsyncKeyState(TECLA_ESPACIO) & PRESIONADA) 
 			Sleep(20); 
 	while (*pausa) {
-		if (GetAsyncKeyState(VK_SPACE) & 0x8000) {
+		if (GetAsyncKeyState(TECLA_ESPACIO) & PRESIONADA) {
 			finalizarPausa(*inicioPausa, tiempoPausa);
 			*pausa = FALSE;
-			while (GetAsyncKeyState(VK_SPACE) & 0x8000)
+			while (GetAsyncKeyState(TECLA_ESPACIO) & PRESIONADA)
 				Sleep(20);
 		}
 		Sleep(20);
 	}
+	PlaySound(TEXT("./sound/pausa.wav"), NULL, SND_FILENAME | SND_ASYNC);
 }
 
 void terminarJuego(BOOL *salir, BOOL *reiniciar){
@@ -360,6 +363,7 @@ void gestionarBolaMovil(Serpiente **serpiente, Bolamovil *bolaMovil, int *cicloM
 						//colision con cabeza de la serpiente
 						PUNTAJE += bolaMovil->bola.puntos * NIVEL;
 						comerBola(*serpiente,cola,MATRIZ);
+						PlaySound(TEXT("./sound/movil.wav"), NULL, SND_FILENAME | SND_ASYNC);
 						Sleep(VELOCIDAD);
 						bolaMovil->bola.estado = FALSE;
 						bolaMovil->bola.posicion.x = 0;
@@ -388,6 +392,7 @@ void gestionarPortales(Serpiente**s,int*portalH,int*portalV){
 			encenderPortalVertical();
 			(*portalV)+=2;
 		}
+		PlaySound(TEXT("./sound/portal.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		teletransportar(*s);
 		moverSerpiente(*s);
 	}
@@ -414,18 +419,21 @@ void detectarBola(Serpiente**s,Coordenadas cola,Bola *bComun,Bola *bTemp, Bolamo
 		bComun->posicion.x = 0;
 		bComun->posicion.y = 0;
 		PUNTAJE += bComun->puntos * NIVEL;
+		PlaySound(TEXT("./sound/comun.wav"), NULL, SND_FILENAME | SND_ASYNC);
 	}
 	else if(tipoBola==TEMPORAL){
 		PUNTAJE += bTemp->puntos * NIVEL;
 		bTemp->estado = FALSE;
 		bTemp->posicion.x = 0;
 		bTemp->posicion.y = 0;
+		PlaySound(TEXT("./sound/temporal.wav"), NULL, SND_FILENAME | SND_ASYNC);
 	}
 	else if(tipoBola==MOVIL){
 		PUNTAJE += bMovil->bola.puntos * NIVEL;
 		bMovil->bola.estado = FALSE;
 		bMovil->bola.posicion.x = 0;
 		bMovil->bola.posicion.y = 0;
+		PlaySound(TEXT("./sound/movil.wav"), NULL, SND_FILENAME | SND_ASYNC);
 	}
 	if(tipoBola==COMUN || tipoBola==TEMPORAL || tipoBola==MOVIL){
 		comerBola(*s,cola,MATRIZ);

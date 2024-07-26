@@ -1,9 +1,6 @@
 #include <stdio.h>
 #include "../include/escenarios.h"
 
-
-
-
 void escenario_1(){
 	moverCursor(OFFSETX, OFFSETY);
 	for(int i=0;i<COLS;i++)
@@ -24,7 +21,7 @@ void escenario_1(){
 void escenario_2(){
 	escenario_1();
 	moverCursor(25+OFFSETX,OFFSETY);
-	cambiarColorFuente(0x1);
+	cambiarColorFuente(CELESTE);
 	for (int i=0;i<10;i++)
 		printf("%c",220);
 	moverCursor(25+OFFSETX,ROWS-1 + OFFSETY);
@@ -38,7 +35,7 @@ void escenario_2(){
 		moverCursor(COLS-1 + OFFSETX,i+7+OFFSETY);
 		printf("%c",219);
 	}
-	cambiarColorFuente(0x0F);
+	cambiarColorFuente(BLANCO);
 }
 
 void escenario_3(){
@@ -60,10 +57,9 @@ void escenario_3(){
 }
 
 void limpiarEscenario(){
-	cambiarColorFuente(0x0F);
+	cambiarColorFuente(BLANCO);
 	moverCursor(25+OFFSETX,OFFSETY);
-	//for (int i=0;i<10;i++)
-		printf("%c%c%c%c%c%c%c%c%c%c",220,220,220,220,220,220,220,220,220,220);
+	printf("%c%c%c%c%c%c%c%c%c%c",220,220,220,220,220,220,220,220,220,220);
 	moverCursor(25+OFFSETX,ROWS-1 + OFFSETY);
 	printf("%c%c%c%c%c%c%c%c%c%c",223,223,223,223,223,223,223,223,223,223);
 	for(int i=0;i<6;i++){
@@ -81,11 +77,9 @@ void limpiarEscenario(){
 		printf(" ");
 	}
 	moverCursor(24+OFFSETX,4+OFFSETY);
-	//for(int i=0;i<12;i++)
-		printf("            ");
+	printf("            ");
 	moverCursor(24+OFFSETX,15+OFFSETY);
-	//for(int i=0;i<12;i++)
-		printf("            ");
+	printf("            ");
 }
 
 void dibujarEscenario(int escenario){
