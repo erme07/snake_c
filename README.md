@@ -21,3 +21,26 @@ Juego de consola realizado con lenguaje c **para windows**.
 - Sonidos personalizados para cada acción realizada dentro del juego.
 - Menús interactivos para cada instancia del programa.
 
+## Instalación
+
+Después de descargar o clonar el repositorio, se debe compilar el código con GCC. 
+
+#### Usando Makefile
+Para usar este método, además de GCC, debe estar disponible la herramienta "Make". Todos los comandos necesarios serán ejecutados de forma automática.
+```bash
+make snake
+```
+#### Compilar manualmente
+Comandos necesarios para compilar manualmente el proyecto:
+```bash
+mkdir -p ./obj
+gcc -I./include -c main.c -o obj/main.o
+gcc -I./include -c src/consola.c -o obj/consola.o
+gcc -I./include -c src/escenarios.c -o obj/escenarios.o
+gcc -I./include -c src/colisiones.c -o obj/colisiones.o
+gcc -I./include -c src/panel.c -o obj/panel.o
+gcc -I./include -c src/serpiente.c -o obj/serpiente.o
+gcc -I./include -c src/cronometro.c -o obj/cronometro.o
+windres res/resource.rc -O coff -o obj/resource.o
+gcc -o snake ./obj/main.o ./obj/consola.o ./obj/escenarios.o ./obj/colisiones.o ./obj/panel.o ./obj/serpiente.o ./obj/cronometro.o ./obj/resource.o -I./include -lwinmm
+```
