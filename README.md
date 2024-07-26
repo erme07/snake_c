@@ -19,6 +19,7 @@ Juego de consola realizado con lenguaje c **para windows**.
   - Temporal, 25 puntos * nivel (Desaparece luego de 4 segundos).
   - Móvil, 50 puntos * nivel (Se mueve por el mapa antes de desaparecer).
 - Sonidos personalizados para cada acción realizada dentro del juego.
+- Se puede pausar el juego.
 - Menús interactivos para cada instancia del programa.
 
 ## Instalación
