@@ -1,8 +1,11 @@
+
 #ifndef ESTRUCTURAS_H
 #define ESTRUCTURAS_H
 
-#define OFFSETX 			0//26
-#define OFFSETMENUX 	28//2
+#include <windows.h>
+
+#define OFFSETX 			26//0
+#define OFFSETMENUX 	2//28
 #define OFFSETY 			0
 #define ROWS					20
 #define COLS 					60
@@ -13,7 +16,7 @@ enum DIRECCIONES{
 	IZQUIERDA, 
 	DERECHA
 };
-enum BLOQUES{
+enum BOLAS{
 	COMUN = 4,
 	TEMPORAL,
 	MOVIL,
@@ -61,5 +64,19 @@ typedef struct serpiente{
 	int largo;
 	Bloque *cola;
 }Serpiente;
+
+typedef struct bola{
+	Coordenadas posicion;
+	int tipo;
+	int color;
+	int puntos;
+	BOOL estado;
+}Bola;
+
+typedef struct bolamovil{
+	Bola bola;
+	int velocidad;
+	int direccion;
+}Bolamovil;
 
 #endif //ESTRUCTURAS_H
