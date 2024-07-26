@@ -10,6 +10,6 @@ void iniciarCronometro(DWORD*);
 void iniciarPausa(DWORD*);
 void finalizarPausa(DWORD,DWORD*);
 double obtenerTiempo(DWORD,DWORD);
-void imprimirCronometro(Tiempo *, DWORD, DWORD);
+void imprimirCronometro(Tiempo*,DWORD,DWORD);
 
 #endif //CRONOMETRO_H

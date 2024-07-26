@@ -10,35 +10,36 @@ int menu(){
   do{ 
     moverCursor(OFFSETMENUX+5, 8);
     if(opcion==1)
-      cambiarColorFuente(0x0C);
+      cambiarColorFuente(DORADO);
     else
-      cambiarColorFuente(0x0A);
+      cambiarColorFuente(BLANCO);
     printf("%c Cl%csico",opc1,160);
     moverCursor(OFFSETMENUX+5, 9);
     if(opcion==2)
-      cambiarColorFuente(0x0C);
+      cambiarColorFuente(DORADO);
     else
-      cambiarColorFuente(0x0A);
+      cambiarColorFuente(BLANCO);
     printf("%c Portales",opc2);
     moverCursor(OFFSETMENUX+5, 10);
     if(opcion==3)
-      cambiarColorFuente(0x0C);
+      cambiarColorFuente(DORADO);
     else
-      cambiarColorFuente(0x0A);
+      cambiarColorFuente(BLANCO);
     printf("%c Obst%cculos",opc3,160);
     if(opcion==4)
-      cambiarColorFuente(0x0C);
+      cambiarColorFuente(ROJO);
     else
-      cambiarColorFuente(0x0A);
+      cambiarColorFuente(BLANCO);
     moverCursor(OFFSETMENUX+5, 12);
     printf("%c Salir",opc4);
     moverCursor(OFFSETMENUX+4, 15);
-    cambiarColorFuente(0x0A);
+    cambiarColorFuente(AMARILLO);
     printf("Elija una opcion,");
     moverCursor(OFFSETMENUX+5, 16);
     printf("presione ENTER");
-    cambiarColorFuente(0x0F);
+    cambiarColorFuente(BLANCO);
     tecla = getch();
+    PlaySound(TEXT("./sound/menu.wav"), NULL, SND_FILENAME | SND_ASYNC);
     if(tecla==72 && opcion>1){
       opcion--;
     }else if(tecla==80 && opcion<4){
@@ -83,7 +84,7 @@ int seleccionarEscenario(){
 }
 
 void pintarMarco(){
-  cambiarColorFuente(0x0F);
+  cambiarColorFuente(BLANCO);
   moverCursor(OFFSETMENUX +1, OFFSETY);
 	for(int i=0;i<COLSPANEL;i++)
 		printf("%c",220);
@@ -101,7 +102,7 @@ void pintarMarco(){
 }
 
 void imprimirLogo(){
-  cambiarColorFuente(0x0F);
+  cambiarColorFuente(BLANCO);
   moverCursor(18+OFFSETX, 8+OFFSETY);
 	printf("%c%c%c%c %c%c%c%c %c%c%c%c %c  %c %c%c%c%c",219,219,219,220, 219,219,219,220, 219,219,219,220, 219,219 ,219,219,219,220);
   moverCursor(18+OFFSETX, 9+OFFSETY);
@@ -111,7 +112,7 @@ void imprimirLogo(){
 }
 
 void borrarLogo(){
-  cambiarColorFuente(0x0F);
+  cambiarColorFuente(BLANCO);
   moverCursor(18+OFFSETX, 8+OFFSETY);
 	printf("                        ");
   moverCursor(18+OFFSETX, 9+OFFSETY);
@@ -134,46 +135,53 @@ void borrarMenu(){
 }
 
 void imprimirGameOver(){
-  moverCursor(OFFSETX+13, 7);
-  printf("%c%c%c %c%c%c %c%c%c%c%c %c%c%c  %c%c%c %c %c %c%c%c %c%c%c\n",219,219,220, 219,219,220, 219,219,220,219,220, 219,219,220, 219,219,220, 219,219, 219,219,220, 219,219,220);
-  moverCursor(OFFSETX+13, 8);
-  printf("%c%c%c %c%c%c %c %c %c %c%c%c  %c %c %c %c %c%c%c %c%c%c\n",219,220,220, 219,220,219, 219,219,219, 219,220,220, 219,219, 219,219, 219,220,220, 219,220,223);
-  moverCursor(OFFSETX+13, 9);
-  printf("%c%c%c %c %c %c %c %c %c%c%c  %c%c%c %c%c%c %c%c%c %c %c\n",219,220,219, 219,219, 219,219,219, 219,220,220, 223,219,223, 223,219,223, 219,220,220, 219,219);
+  moverCursor(OFFSETX+12, 6);
+  printf("                                    ");
+  moverCursor(OFFSETX+12, 7);
+  printf(" %c%c%c %c%c%c %c%c%c%c%c %c%c%c  %c%c%c %c %c %c%c%c %c%c%c ",219,219,220, 219,219,220, 219,219,220,219,220, 219,219,220, 219,219,220, 219,219, 219,219,220, 219,219,220);
+  moverCursor(OFFSETX+12, 8);
+  printf(" %c%c%c %c%c%c %c %c %c %c%c%c  %c %c %c %c %c%c%c %c%c%c ",219,220,220, 219,220,219, 219,219,219, 219,220,220, 219,219, 219,219, 219,220,220, 219,220,223);
+  moverCursor(OFFSETX+12, 9);
+  printf(" %c%c%c %c %c %c %c %c %c%c%c  %c%c%c %c%c%c %c%c%c %c %c ",219,220,219, 219,219, 219,219,219, 219,220,220, 223,219,223, 223,219,223, 219,220,220, 219,219);
+  moverCursor(OFFSETX+12, 10);
+  printf("                                    ");
 }
 
 int menuGameOver(){
   int opcion = 1,tecla;
-
-  cambiarColorFuente(0x0F);
-  moverCursor(OFFSETX+27, 13);
-  printf("<-  ->");
-
+  cambiarColorFuente(BLANCO);
+  moverCursor(OFFSETX+17, 12);
+  printf("                          ");
+  moverCursor(OFFSETX+26, 13);
+  printf(" <-  -> ");
+  moverCursor(OFFSETX+26, 14);
+  printf("        ");
   do{
-    moverCursor(OFFSETX+18, 11);
+    moverCursor(OFFSETX+17, 11);
     switch(opcion) {
       case 1:
-        cambiarColorFuente(0x06);
-        printf("reiniciar ");
-        cambiarColorFuente(0x0F);
-        printf("| menu | salir");
+        cambiarColorFuente(DORADO);
+        printf(" reiniciar ");
+        cambiarColorFuente(BLANCO);
+        printf("| menu | salir ");
         break;
       case 2:
-        cambiarColorFuente(0x0F);
-        printf("reiniciar | ");
-        cambiarColorFuente(0x06);
+        cambiarColorFuente(BLANCO);
+        printf(" reiniciar | ");
+        cambiarColorFuente(DORADO);
         printf("menu");
-        cambiarColorFuente(0x0F);
-        printf(" | salir");
+        cambiarColorFuente(BLANCO);
+        printf(" | salir ");
         break;
       case 3:
-        cambiarColorFuente(0x0F);
-        printf("reiniciar | menu | ");
-        cambiarColorFuente(0x06);
-        printf("salir");
+        cambiarColorFuente(BLANCO);
+        printf(" reiniciar | menu | ");
+        cambiarColorFuente(DORADO);
+        printf("salir ");
         break;
     }
     tecla = getch();
+    PlaySound(TEXT("./sound/menu.wav"), NULL, SND_FILENAME | SND_ASYNC);
     if(tecla==75 && opcion>1){
       opcion--;
     }else if(tecla==77 && opcion<3){
@@ -184,41 +192,41 @@ int menuGameOver(){
 }
 
 void estadisticas(Serpiente*s,int puntaje,int nivel,BOOL pausa){
-  cambiarColorFuente(0x0F);
+  cambiarColorFuente(BLANCO);
   moverCursor(OFFSETMENUX+5, 5);
   printf("Puntaje: ");
-	cambiarColorFuente(0xE);
+	cambiarColorFuente(AMARILLO);
 	printf("%d", puntaje);
   moverCursor(OFFSETMENUX+7, 6);
-	cambiarColorFuente(0x0F);
+	cambiarColorFuente(BLANCO);
   printf("Largo: ");
-	cambiarColorFuente(0xE);
+	cambiarColorFuente(AMARILLO);
 	printf("%d", s->largo);
 	moverCursor(OFFSETMENUX+7, 7);
-	cambiarColorFuente(0xF);
+	cambiarColorFuente(BLANCO);
   printf("Nivel: ");
-	cambiarColorFuente(0xE);
+	cambiarColorFuente(AMARILLO);
 	printf("%d", nivel);
-	cambiarColorFuente(0xF);
+	cambiarColorFuente(BLANCO);
 	moverCursor(OFFSETMENUX+5, 15);
-  printf("%c: 10pts x Nvl", 254);
+  printf("%c: 10pts x Nvl", BOLA);
   moverCursor(OFFSETMENUX+5, 16);
-  cambiarColorFuente(0x6);
-  printf("%c: 25pts x Nvl", 254);
+  cambiarColorFuente(DORADO);
+  printf("%c: 25pts x Nvl", BOLA);
   moverCursor(OFFSETMENUX+5, 17);
-  cambiarColorFuente(0x4);
-  printf("%c: 50pts x Nvl", 254);
-  cambiarColorFuente(0xF);
+  cambiarColorFuente(ROJO);
+  printf("%c: 50pts x Nvl", BOLA);
+  cambiarColorFuente(BLANCO);
   moverCursor(OFFSETMENUX+4, 12);
   if(pausa){
     printf("pausar/");
-    cambiarColorFuente(0x6);
+    cambiarColorFuente(DORADO);
     printf("reanudar");
-    cambiarColorFuente(0xF);
+    cambiarColorFuente(BLANCO);
   }else{
-    cambiarColorFuente(0x6);
+    cambiarColorFuente(DORADO);
     printf("pausar");
-    cambiarColorFuente(0xF);
+    cambiarColorFuente(BLANCO);
     printf("/reanudar");
   }
 	moverCursor(OFFSETMENUX+7, 13);

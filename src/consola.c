@@ -8,6 +8,7 @@ void moverCursor(int x, int y){
     pos.Y = y;
     SetConsoleCursorPosition(hConsola, pos);
 }
+
 void ocultarCursor() {
     HANDLE hConsola = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_CURSOR_INFO cursorInfo;
@@ -31,8 +32,7 @@ void deshabilitarModoEdicionRapida() {
 void establecerTamanioConsola(int ancho, int alto){
     HWND wConsola = GetConsoleWindow();
     RECT r;
-    
-    GetWindowRect(wConsola, &r); // Obtiene el tamaño actual de la consola
+    GetWindowRect(wConsola, &r);
     MoveWindow(wConsola, r.left, r.top, ancho, alto, TRUE);
 }
 void dehabilitarRedimension(){
@@ -47,7 +47,6 @@ void eliminarScroll() {
     CONSOLE_SCREEN_BUFFER_INFO info;
     if (GetConsoleScreenBufferInfo(hConsola, &info)) {
         COORD newSize;
-        // El tamaño del búfer debe ser al menos tan grande como las dimensiones de la ventana.
         newSize.X = info.srWindow.Right - info.srWindow.Left + 1;
         newSize.Y = info.srWindow.Bottom - info.srWindow.Top + 1;
         SetConsoleScreenBufferSize(hConsola, newSize);

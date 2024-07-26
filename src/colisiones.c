@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <windows.h>
+#include <mmsystem.h>
 #include "../include/colisiones.h"
 
 int matriz_uno[ROWS][COLS] = {
@@ -43,7 +45,7 @@ int matriz_dos[ROWS][COLS] = {
 	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
 	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
 	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
 	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
 };
 
@@ -71,7 +73,6 @@ int matriz_tres[ROWS][COLS] = {
 };
 
 
-
 void establecerMatriz(int ESCENARIO,int MATRIZ[ROWS][COLS]){
 	if(ESCENARIO==ESCENARIO1){
 		for (int i = 0; i < ROWS; i++){
@@ -80,108 +81,61 @@ void establecerMatriz(int ESCENARIO,int MATRIZ[ROWS][COLS]){
 		}
 	}else if(ESCENARIO==ESCENARIO2){
 		for (int i = 0; i < ROWS; i++){
-			for (int j = 0; j < COLS; j++)
-				MATRIZ[i][j] = matriz_dos[i][j];
+			for (int j = 0; j < COLS; j++){
+				if(matriz_dos[i][j]==3)
+					MATRIZ[i][j] = 0;
+				else
+					MATRIZ[i][j] = matriz_dos[i][j];
+			}
 		}
 	}else if(ESCENARIO==ESCENARIO3){
 		for (int i = 0; i < ROWS; i++){
 			for (int j = 0; j < COLS; j++)
-				MATRIZ[i][j] = matriz_tres[i][j];
+				if(matriz_tres[i][j]==3)
+					MATRIZ[i][j] = 0;
+				else
+					MATRIZ[i][j] = matriz_tres[i][j];
 		}
 	}
 }
 
-BOOL colisionBola(Serpiente *s, Bloque *bola){
-	if(bola==NULL)
-		return FALSE;
-	else if(s->cabeza->posicion.x == bola->posicion.x && s->cabeza->posicion.y == bola->posicion.y){
-		return TRUE;
-	}
-	return FALSE;
-}
-
-BOOL colisionEscenarios(Serpiente *s, int ESCENARIO){
+int colisionBola(Serpiente *s, int matriz[ROWS][COLS]){
 	Coordenadas c={s->cabeza->posicion.x, s->cabeza->posicion.y};
-	int tiempo;
-	BOOL colision = FALSE;
-	switch(ESCENARIO){
-		case ESCENARIO1:
-			colision = colisionEscen1(c);
-			break;
-		case ESCENARIO2:
-			colision = colisionEscen2(c);
-			break;
-		case ESCENARIO3:
-			colision = colisionEscen3(c);
-			break;
-	}
+	return matriz[c.y - OFFSETY][c.x - OFFSETX];
+}
+
+BOOL colisionEscenarios(Serpiente *s,int ESCENARIO){
+	Coordenadas c={s->cabeza->posicion.x, s->cabeza->posicion.y};
+	BOOL colision = matrizColision(c,ESCENARIO);
 	if(colision){
-		if(s->largo > 30)
-			tiempo = 5;
-		else if(s->largo > 20)
-			tiempo = 10;
-		else if(s->largo > 10)
-			tiempo = 20;
-		else
-			tiempo = 30;
-		matarSerpiente(s,tiempo);
+		cambiarColorFuente(ROJO_INTENSO);
+		moverCursor(c.x, c.y);
+		if(c.y == OFFSETY)
+			printf("%c", 220);
+		else if(c.y == ROWS-1+OFFSETY)
+			printf("%c", 223);
+		else 
+			printf("%c", 219);
+		cambiarColorFuente(BLANCO);
+		PlaySound(TEXT("./sound/dead.wav"), NULL, SND_FILENAME | SND_ASYNC);
+		animacionColision(s, tiempoAnimacion(s->largo));
 	}
 	return colision;
 }
 
-BOOL colisionEscen1(Coordenadas c){
-	if(matriz_uno[c.y-OFFSETY][c.x-OFFSETX] == 1){
-		cambiarColorFuente(0x04);
-		moverCursor(c.x, c.y);
-		if(c.y == OFFSETY)
-			printf("%c", 220);
-		else if(c.y == ROWS-1+OFFSETY)
-			printf("%c", 223);
-		else 
-			printf("%c", 219);
-		cambiarColorFuente(0x0F);
-		return TRUE;
-	}
-	return FALSE;
-}
-
-BOOL colisionEscen2(Coordenadas c){
-	if(matriz_dos[c.y-OFFSETY][c.x-OFFSETX] == 1){
-		cambiarColorFuente(0x04);
-		moverCursor(c.x, c.y);
-		if(c.y == OFFSETY)
-			printf("%c", 220);
-		else if(c.y == ROWS-1+OFFSETY)
-			printf("%c", 223);
-		else 
-			printf("%c", 219);
-		cambiarColorFuente(0x0F);
-		return TRUE;
-	}
-	return FALSE;
-}
-
-BOOL colisionEscen3(Coordenadas c){
-	BOOL colision = colisionEscen2(c);
-	if(matriz_tres[c.y-OFFSETY][c.x-OFFSETX] == 1){
-		cambiarColorFuente(0x04);
-		moverCursor(c.x, c.y);
-		if(c.y == OFFSETY)
-			printf("%c", 220);
-		else if(c.y == ROWS-1+OFFSETY)
-			printf("%c", 223);
-		else 
-			printf("%c", 219);
-		cambiarColorFuente(0x0F);
-		return TRUE;
-	}
-	return colision;
+BOOL matrizColision(Coordenadas c,int escenario){
+	if(escenario==ESCENARIO1)
+		return (matriz_uno[c.y-OFFSETY][c.x-OFFSETX] == 1) ? TRUE : FALSE;
+	else if(escenario==ESCENARIO2)
+		return (matriz_dos[c.y-OFFSETY][c.x-OFFSETX] == 1) ? TRUE : FALSE;
+	else if(escenario==ESCENARIO3)
+		return (matriz_tres[c.y-OFFSETY][c.x-OFFSETX] == 1) ? TRUE : FALSE;
+	else return FALSE;
 }
 
 BOOL colisionSerpiente(Serpiente *s){
 	Bloque *aux = s->cola;
 	BOOL colision = FALSE;
-	int tiempo;
 	Coordenadas c;
 	c.x = s->cabeza->posicion.x;
 	c.y = s->cabeza->posicion.y;
@@ -192,25 +146,24 @@ BOOL colisionSerpiente(Serpiente *s){
 		}
 		aux = aux->anterior;
 	}
-	if(colision){
-		if(s->largo > 40)
-			tiempo = 10;
-		else if(s->largo > 30)
-			tiempo = 30;
-		else if(s->largo > 20)
-			tiempo = 50;
-		else if(s->largo > 10)
-			tiempo = 80;
-		else
-			tiempo = 100;
-		matarSerpiente(s,tiempo);
-	}
+	if(colision)
+		animacionColision(s, tiempoAnimacion(s->largo));
 	return colision;
 }
 
-void matarSerpiente(Serpiente*s,int tiempo){
+int tiempoAnimacion(int largo){
+	if(largo > 30)
+		return 5;
+	if(largo > 20)
+		return 10;
+	if(largo > 10)
+		return 20;
+	return 30;
+}
+
+void animacionColision(Serpiente*s,int tiempo){
 	Bloque *aux = s->cabeza;
-	cambiarColorFuente(0x04);
+	cambiarColorFuente(ROJO_INTENSO);
 	while(aux!=NULL){
 		if(aux->anterior!=NULL){
 			moverCursor(aux->posicion.x, aux->posicion.y);
@@ -219,103 +172,65 @@ void matarSerpiente(Serpiente*s,int tiempo){
 		}
 		aux = aux->siguiente;
 	}
-	cambiarColorFuente(0x0F);
+	cambiarColorFuente(BLANCO);
 }
 
-// BOOL colisionPortal(Serpiente*s){
-//   Coordenadas c={s->cabeza->posicion.x, s->cabeza->posicion.y};
-//   if((c.x == 0 || c.x == COLS-1) && (c.y >= 11 && c.y <= 18 )){
-//     //encenderPortalHorizontal();
-//     cambiarColorFuente(0x01);
-//     moverCursor(c.x, c.y);
-//     printf("%c\n",219);
-// 		return TRUE;
-// 	}else if((c.y == 0 || c.y == ROWS-1) && (c.x >= 35 && c.x <= 44)){
-//     //encenderPortalVertical();
-//     cambiarColorFuente(0x01);
-//     moverCursor(c.x, c.y);
-//     if(c.y==0)
-//       printf("%c",220);
-//     if (c.y==ROWS-1)
-//       printf("%c",223);
-// 		return TRUE;
-// 	}
-// 	return FALSE;
-// }
-BOOL colisionPortalH(Serpiente*s){
-  Coordenadas c={s->cabeza->posicion.x, s->cabeza->posicion.y};
-  if((c.x == OFFSETX || c.x == COLS-1+OFFSETX) && (c.y >= 7+OFFSETY && c.y <= 12+OFFSETY )){
+BOOL colisionPortal(Coordenadas c){
+	if(matriz_dos[c.y-OFFSETY][c.x-OFFSETX]==2){
 		return TRUE;
-	}
-	return FALSE;
+	}else
+		return FALSE;
 }
 
-BOOL colisionPortalV(Serpiente*s){
-  Coordenadas c={s->cabeza->posicion.x, s->cabeza->posicion.y};
-  if((c.y == OFFSETY || c.y == ROWS-1+OFFSETY) && (c.x >= 25+OFFSETX && c.x <= 34+OFFSETX)){
+BOOL colisionCola(Coordenadas c){
+	if(matriz_dos[c.y-OFFSETY][c.x-OFFSETX]==3){
 		return TRUE;
-	}
-	return FALSE;
-}
-
-BOOL colisionColaH(Serpiente*s){
-  Coordenadas c={s->cola->posicion.x, s->cola->posicion.y};
-  if((c.x == 1+OFFSETX || c.x == COLS-2+OFFSETX) && (c.y >= 7+OFFSETY && c.y <= 12+OFFSETY )){
-		return TRUE;
-	}
-	return FALSE;
-}
-
-BOOL colisionColaV(Serpiente*s){
-  Coordenadas c={s->cola->posicion.x, s->cola->posicion.y};
-  if((c.y == 1+OFFSETY || c.y == ROWS-2+OFFSETY) && (c.x >= 25+OFFSETX && c.x <= 34+OFFSETX)){
-		return TRUE;
-	}
-	return FALSE;
+	}else
+		return FALSE;
 }
 
 void encenderPortalHorizontal(){
-  cambiarColorFuente(0x09);
+  cambiarColorFuente(CELESTE_INT);
   for(int i=0;i<6;i++){
 		moverCursor(OFFSETX,7+i+OFFSETY);
     printf("%c",219);
 		moverCursor(COLS-1+OFFSETX,7+i+OFFSETY);
 		printf("%c",219);
 	}
-  cambiarColorFuente(0x0F);
+  cambiarColorFuente(BLANCO);
 }
 
 void apagarPortalHorizontal(){
-  cambiarColorFuente(0x01);
+  cambiarColorFuente(CELESTE);
   for(int i=0;i<6;i++){
 		moverCursor(OFFSETX,7+i+OFFSETY);
     printf("%c",219);
 		moverCursor(COLS-1+OFFSETX,7+i+OFFSETY);
 		printf("%c",219);
 	}
-  cambiarColorFuente(0x0F);
+  cambiarColorFuente(BLANCO);
 }
 
 void encenderPortalVertical(){
-  cambiarColorFuente(0x09);
+  cambiarColorFuente(CELESTE_INT);
   moverCursor(25+OFFSETX,OFFSETY);
   for (int i=0;i<10;i++)
     printf("%c",220);
   moverCursor(25+OFFSETX,ROWS-1+OFFSETY);
   for (int i=0;i<10;i++)
     printf("%c",223);
-  cambiarColorFuente(0x0F);
+  cambiarColorFuente(BLANCO);
 }
 
 void apagarPortalVertical(){
-  cambiarColorFuente(0x01);
+  cambiarColorFuente(CELESTE);
   moverCursor(25+OFFSETX,OFFSETY);
   for (int i=0;i<10;i++)
     printf("%c",220);
   moverCursor(25+OFFSETX,ROWS-1+OFFSETY);
   for (int i=0;i<10;i++)
     printf("%c",223);
-  cambiarColorFuente(0x0F);
+  cambiarColorFuente(BLANCO);
 }
 
 void teletransportar(Serpiente *s){
@@ -327,31 +242,4 @@ void teletransportar(Serpiente *s){
     s->cabeza->posicion.y = ROWS-2+OFFSETY;
   else if(s->cabeza->posicion.y == ROWS-1+OFFSETY)
     s->cabeza->posicion.y = 1+OFFSETY;
-}
-
-int detectarColisiones(Serpiente *s, Bloque *b,Bloque *bt,Bloque*bm, int ESCEN){
-	if( (ESCEN == ESCENARIO2 || ESCEN == ESCENARIO3 )){
-		if(colisionPortalV(s)){
-			return COLISION_PORTALV;
-		}else if(colisionPortalH(s)){
-			return COLISION_PORTALH;
-		}
-		if(colisionColaH(s)){
-			return COLISION_COLAH;
-		}else if(colisionColaV(s)){
-			return COLISION_COLAV;
-		}
-	}
-	if(colisionBola(s, b))
-		return COLISION_BOLA;
-	else if(colisionBola(s, bt))
-			return COLISION_BOLATEMP;
-	else if(colisionBola(s, bm))
-			return COLISION_BOLAMOVIL;
-	else if(colisionEscenarios(s, ESCEN))
-		return COLISION_ESCENARIO;
-	else if(colisionSerpiente(s))
-		return COLISION_SERPIENTE;
-	else 
-		return 0;
 }

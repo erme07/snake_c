@@ -1,4 +1,5 @@
 #include "../include/serpiente.h"
+#include "../include/colisiones.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -15,7 +16,7 @@ void agregarBloque(Serpiente *serpiente, Bloque *bloque){
 	serpiente->largo++;
 }
 
-Bloque *crearBloque (Coordenadas c,char caracter,int color){
+Bloque *crearBloque (Coordenadas c){
 	Bloque *bloque = (Bloque *)malloc(sizeof(Bloque));
 	if (bloque == NULL) {
 		// No se pudo asignar memoria para el bloque
@@ -23,45 +24,107 @@ Bloque *crearBloque (Coordenadas c,char caracter,int color){
   }
 	bloque->posicion.x = c.x;
 	bloque->posicion.y = c.y;
-	bloque->valor = caracter;
-	bloque->color = color;
 	bloque->siguiente = NULL;
 	bloque->anterior = NULL;
 	return bloque;
 }
 
-void imprimirBloque(Bloque *b){
-	cambiarColorFuente(b->color);
-	moverCursor(b->posicion.x, b->posicion.y);
-	printf("%c", b->valor);
-	cambiarColorFuente(0x0F);
+void imprimirBloque(int tipoBloque,Coordenadas c){
+	moverCursor(c.x, c.y);
+	if(tipoBloque == COMUN){
+		cambiarColorFuente(BLANCO);
+		printf("%c", BOLA);
+	}
+	else if(tipoBloque == TEMPORAL){
+		cambiarColorFuente(DORADO);
+		printf("%c", BOLA);
+	}
+	else if(tipoBloque == MOVIL){
+		cambiarColorFuente(ROJO);
+		printf("%c", BOLA);
+	}else{
+		cambiarColorFuente(VERDE);
+		printf("O");
+	}
+	cambiarColorFuente(BLANCO);
 }
 
-Bloque *generarBola(Serpiente*s,int ESCEN,int color){
-	Bloque *aux = s->cola;
-	Coordenadas c = coordenadasAleatorias();
+void generarBola(Serpiente*s, Bola *bolaComun,int matriz[ROWS][COLS]){
+	Coordenadas c;
 	BOOL coordenadasOcupadas;
 	do{
 		coordenadasOcupadas = FALSE;
 		c = coordenadasAleatorias();
-		aux = s->cola;
-		while(aux != NULL) {
-			if(aux->posicion.x == c.x && aux->posicion.y == c.y) {
-				coordenadasOcupadas = TRUE;
-				break; // Salir del bucle si se encuentra una coincidencia
+		Bloque *aux = s->cabeza;
+		if(matriz[c.y-OFFSETY][c.x-OFFSETX]!=0){
+			
+			coordenadasOcupadas = TRUE;
+		}
+		else{
+			while(aux != NULL) {
+				if(aux->posicion.x == c.x && aux->posicion.y == c.y) {
+					coordenadasOcupadas = TRUE;
+					break; // Salir del bucle si se encuentra una coincidencia
+				}
+				aux = aux->siguiente;
 			}
-			if(ESCEN == ESCENARIO3 && colisionEscen3(c)){
-				coordenadasOcupadas = TRUE;
-				break;
-			}
-			aux = aux->anterior;
 		}
 	} while(coordenadasOcupadas); // Repetir si las coordenadas están ocupadas
-	Bloque *bola = crearBloque(c,254,color); //254 craracter ascii
-	imprimirBloque(bola);
-	return bola;
+	matriz[c.y-OFFSETY][c.x-OFFSETX] = bolaComun->tipo;
+	bolaComun->posicion.x = c.x;
+	bolaComun->posicion.y = c.y;
+	imprimirBloque(bolaComun->tipo,bolaComun->posicion);
 }
 
+void generarBolaTemporal(Serpiente*s,Bola *bolatemp,int matriz[ROWS][COLS]){
+	Coordenadas c;
+	BOOL coordenadasOcupadas;
+	do{
+		coordenadasOcupadas = FALSE;
+		c = coordenadasAleatorias();
+		Bloque *aux = s->cabeza;
+		if(matriz[c.y-OFFSETY][c.x-OFFSETX]!=0)
+			coordenadasOcupadas = TRUE;
+		else{
+			while(aux != NULL) {
+				if(aux->posicion.x == c.x && aux->posicion.y == c.y) {
+					coordenadasOcupadas = TRUE;
+					break; // Salir del bucle si se encuentra una coincidencia
+				}
+				aux = aux->siguiente;
+			}
+		}
+	} while(coordenadasOcupadas); // Repetir si las coordenadas están ocupadas
+	matriz[c.y-OFFSETY][c.x-OFFSETX] = bolatemp->tipo;
+	bolatemp->posicion.x = c.x;
+	bolatemp->posicion.y = c.y;
+	imprimirBloque(bolatemp->tipo,c);
+}
+
+void generarBolaMovil(Serpiente*s,Bolamovil *bolamov,int matriz[ROWS][COLS]){
+	Coordenadas c;
+	BOOL coordenadasOcupadas;
+	do{
+		coordenadasOcupadas = FALSE;
+		c = coordenadasAleatorias();
+		Bloque *aux = s->cabeza;
+		if(matriz[c.y-OFFSETY][c.x-OFFSETX]!=0)
+			coordenadasOcupadas = TRUE;
+		else{
+			while(aux != NULL) {
+				if(aux->posicion.x == c.x && aux->posicion.y == c.y) {
+					coordenadasOcupadas = TRUE;
+					break; // Salir del bucle si se encuentra una coincidencia
+				}
+				aux = aux->siguiente;
+			}
+		}
+	} while(coordenadasOcupadas); // Repetir si las coordenadas están ocupadas
+	matriz[c.y-OFFSETY][c.x-OFFSETX] = bolamov->bola.tipo;
+	bolamov->bola.posicion.x = c.x;
+	bolamov->bola.posicion.y = c.y;
+	imprimirBloque(bolamov->bola.tipo,c);
+}
 
 Coordenadas coordenadasAleatorias(){
 	Coordenadas c;
@@ -75,12 +138,11 @@ void limpiarBloque(int x, int y){
 	printf(" ");
 }
 
-void comerBola(Serpiente *serpiente, Bloque *bloque, Coordenadas c){
-	bloque->posicion.x = c.x;
-	bloque->posicion.y = c.y;
-	bloque->color = 0x0A;
-	bloque->valor = 'O';
-	agregarBloque(serpiente, bloque);
+void comerBola(Serpiente *serpiente, Coordenadas c,int matriz[ROWS][COLS]){
+	Bloque*b=crearBloque(c);
+	Bloque *aux = serpiente->cabeza;
+	matriz[aux->posicion.y-OFFSETY][aux->posicion.x-OFFSETX] = 0;
+	agregarBloque(serpiente, b);
 }
 
 Coordenadas moverBloque(int direccion){
@@ -116,8 +178,9 @@ void actualizarCoordenadas(Serpiente *s, int direccion){
 }
 
 void moverSerpiente(Serpiente *s){
+	Coordenadas c= s->cabeza->posicion;
 	//imprimirSerpiente(s);
-	imprimirBloque(s->cabeza);
+	imprimirBloque(CUERPO,c);
 }
 
 Serpiente *crearSerpiente(){
@@ -128,14 +191,12 @@ Serpiente *crearSerpiente(){
 	return serpiente;
 }
 
-
-
 void inicializarSerpiente(Serpiente *serpiente){
 	Coordenadas c[5];
 	for (int i = 0;i<5;i++){
 		c[i].x = 28+i+OFFSETX;
 		c[i].y = 12+OFFSETY;
-		Bloque *b = crearBloque(c[i],'O',0x0A);
+		Bloque *b = crearBloque(c[i]);
 		agregarBloque(serpiente, b);
 	}
 }
@@ -143,7 +204,7 @@ void inicializarSerpiente(Serpiente *serpiente){
 void imprimirSerpiente(Serpiente *serpiente){
 	Bloque *aux = serpiente->cabeza;
 	while(aux != NULL){
-		imprimirBloque(aux);
+		imprimirBloque(CUERPO,aux->posicion);
 		aux = aux->siguiente;
 	}
 }
