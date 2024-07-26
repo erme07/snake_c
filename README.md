@@ -2,7 +2,7 @@
 
 Juego de consola realizado con lenguaje c **para windows**.
 
-## Caracteristicas
+## Características
 
 - Control mediante las teclas direccionales.
 - Es posible acelerar la serpiente presionando hacia adelante, según la dirección que posea.
@@ -45,7 +45,9 @@ gcc -I./include -c src/cronometro.c -o obj/cronometro.o
 windres res/resource.rc -O coff -o obj/resource.o
 gcc -o snake ./obj/main.o ./obj/consola.o ./obj/escenarios.o ./obj/colisiones.o ./obj/panel.o ./obj/serpiente.o ./obj/cronometro.o ./obj/resource.o -I./include -lwinmm
 ```
+
 ## Capturas
 
-![preview](img/preview-a.jpg)
-![preview](img/preview-b.jpg)
+![preview](img/preview_a.jpg)
+![preview](img/preview_b.jpg)
+
