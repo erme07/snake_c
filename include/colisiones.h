@@ -5,25 +5,19 @@
 #include "estructuras.h"
 #include "consola.h"
 
-BOOL colisionBola(Serpiente*, Bloque*);
-BOOL colisionEscenarios(Serpiente*,int);
-BOOL colisionSerpiente(Serpiente*);
-BOOL colisionEscen1(Coordenadas);
-BOOL colisionEscen2(Coordenadas);
-BOOL colisionEscen3(Coordenadas);
-BOOL colisionPortal(Serpiente*);
-BOOL colisionPortalH(Serpiente*);
-BOOL colisionPortalV(Serpiente*);
-BOOL colisionColaH(Serpiente*);
-BOOL colisionColaV(Serpiente*);
-void matarSerpiente(Serpiente*,int);
-void encenderPortalHorizontal();
-void encenderPortalVertical();
-void apagarPortalHorizontal();
-void apagarPortalVertical();
+int colisionBola(Serpiente*,int[ROWS][COLS]);
+int tiempoAnimacion(int);
+void animacionColision(Serpiente*,int);
+void encenderPortalHorizontal(void);
+void encenderPortalVertical(void);
+void apagarPortalHorizontal(void);
+void apagarPortalVertical(void);
 void teletransportar(Serpiente*);
-int detectarColisiones(Serpiente*,Bloque*,Bloque*,Bloque*,int);
 void establecerMatriz(int,int[ROWS][COLS]);
-;
+BOOL colisionEscenarios(Serpiente*,int);
+BOOL matrizColision(Coordenadas,int);
+BOOL colisionSerpiente(Serpiente*);
+BOOL colisionPortal(Coordenadas);
+BOOL colisionCola(Coordenadas);
 
 #endif //COLISIONES_H

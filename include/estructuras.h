@@ -4,11 +4,31 @@
 
 #include <windows.h>
 
-#define OFFSETX 			26//0
-#define OFFSETMENUX 	2//28
-#define OFFSETY 			0
+#define FRAMERATE			20 //50fps
 #define ROWS					20
 #define COLS 					60
+
+#define OFFSETX 			26
+#define OFFSETMENUX 	2
+#define OFFSETY 			0
+
+#define FLECHA_ARRIBA			VK_UP
+#define FLECHA_ABAJO			VK_DOWN
+#define FLECHA_IZQUIERDA	VK_LEFT
+#define FLECHA_DERECHA		VK_RIGHT
+#define TECLA_ESPACIO			VK_SPACE
+#define PRESIONADA				0x8000
+
+#define BLANCO				0x0F
+#define VERDE 				0x0A
+#define ROJO 					0x0C
+#define ROJO_INTENSO	0x04
+#define AMARILLO 			0x0E
+#define DORADO 				0x06
+#define CELESTE 			0x01
+#define CELESTE_INT 	0x09
+
+#define BOLA 254
 
 enum DIRECCIONES{
 	ARRIBA, 
@@ -16,6 +36,7 @@ enum DIRECCIONES{
 	IZQUIERDA, 
 	DERECHA
 };
+
 enum BOLAS{
 	COMUN = 4,
 	TEMPORAL,
@@ -27,18 +48,6 @@ enum ESCENARIOS{
 	ESCENARIO1 = 1, 
 	ESCENARIO2, 
 	ESCENARIO3
-};
-
-enum COLISIONES{
-	COLISION_BOLA = 1,
-	COLISION_BOLATEMP,
-	COLISION_BOLAMOVIL,
-	COLISION_ESCENARIO,
-	COLISION_SERPIENTE,
-	COLISION_PORTALV,
-	COLISION_PORTALH,
-	COLISION_COLAV,
-	COLISION_COLAH
 };
 
 typedef struct coordenadas{
